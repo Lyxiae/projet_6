@@ -159,6 +159,6 @@
   },
   "defaultProject": "the-hottest-reviews",
   "cli": {
-    "analytics": "13ffac3c-fb27-4110-b06e-2193d2776be5"
+    "analytics": false
   }
 }
