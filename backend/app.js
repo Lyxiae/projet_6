@@ -27,4 +27,10 @@ app.use((req, res, next) => {
 //parser des données récupérées
 app.use(bodyParser.json());
 
+//Importation des routes depuis sauces.js
+app.use('/api/sauces', sauceRoutes);
+
+//Importation des routes depuis user.js
+app.use('/api/auth', userRoutes);
+
 module.exports = app;
