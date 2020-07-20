@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-// const path = require('path');
+const path = require('path');
 
 const sauceRoutes = require('./routes/sauces');
 const userRoutes = require('./routes/user');
@@ -25,6 +25,8 @@ app.use((req, res, next) => {
 
 //parser des données récupérées
 app.use(bodyParser.json());
+
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 //Importation des routes depuis sauces.js
 app.use('/api/sauces', sauceRoutes);

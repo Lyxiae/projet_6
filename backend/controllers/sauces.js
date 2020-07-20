@@ -6,14 +6,13 @@ const fs = require('fs');
 
 //Logique métier pour createSauce, créer une sauce
 exports.createSauce = (req, res, next) => {
-    console.log(req.body);
-    const sauceObject = req.body;
+    const sauceObject = JSON.parse(req.body.sauce);
     console.log(sauceObject);
     delete sauceObject._id;
     const sauce = new Sauce({
-        ...sauceObject
+        ...sauceObject,
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     });
-    console.log(sauce);
     sauce.save()
     .then(() => res.status(201).json({ message: 'Sauce créée !' }))
     .catch(error => res.status(400).json({ error }));
