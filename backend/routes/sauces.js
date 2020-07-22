@@ -1,11 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-
-
-//Importation du modèle/schéma Sauce
-const Sauce = require('../models/Sauce');
-
 //Importation du middleware d'authentification
 const auth = require('../middleware/auth');
 
@@ -16,6 +11,9 @@ const sauceCtrl = require('../controllers/sauces');
 
 // Route POST, pour ajouter une sauce
 router.post('/', auth, multer, sauceCtrl.createSauce);
+
+//Route POST pour les likes/dislikes
+router.post('/:id/like', sauceCtrl.addLikeDislike);
 
 //Route PUT, pour modifier une sauce créée
 router.put('/:id', auth, multer, sauceCtrl.modifySauce);

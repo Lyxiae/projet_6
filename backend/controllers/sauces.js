@@ -18,6 +18,33 @@ exports.createSauce = (req, res, next) => {
     .catch(error => res.status(400).json({ error }));
 };
 
+//Logique métier pour addLikeDislike pour ajouter un j'aime ou un j'aime pas sur une sauce.
+exports.addLikeDislike = (req, res, next) => {
+    const likes = null;
+    Sauce.findOne({ _id: req.params.id })
+    .then(sauce => {
+        const userId = req.body.userId;
+        const userLikeStatus = req.body.like;
+        if (userLikeStatus == 1 && !sauce.usersLiked.includes(userId)) {
+            sauce.usersLiked.push(userId);
+        }
+        if (userLikeStatus == -1 && !sauce.usersDisliked.includes(userId)) {
+            sauce.usersDisliked.push(userId);
+            console.log(sauce.usersDisliked);
+        };
+        if (userLikeStatus == 0) {
+            sauce.usersLiked.filter(id => id !== userId);
+            sauce.usersDisliked.filter(id => id !== userId);
+            console.log(sauce.usersDisliked);
+        };
+        if (sauce.usersLiked.includes(userId) || sauce.usersDisliked.includes(userId)) {
+            console.log("Vous avez déjà voté !")
+        }
+        console.log(sauce);
+    })
+
+}
+
 //Logique métier pour deleteSauce, supprime une sauce
 exports.deleteSauce = (req, res, next) => {
     Sauce.deleteOne({ _id: req.params.id })
