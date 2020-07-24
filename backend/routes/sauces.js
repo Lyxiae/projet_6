@@ -13,7 +13,7 @@ const sauceCtrl = require('../controllers/sauces');
 router.post('/', auth, multer, sauceCtrl.createSauce);
 
 //Route POST pour les likes/dislikes
-router.post('/:id/like', sauceCtrl.addLikeDislike);
+router.post('/:id/like', auth, sauceCtrl.addLikeDislike);
 
 //Route PUT, pour modifier une sauce créée
 router.put('/:id', auth, multer, sauceCtrl.modifySauce);

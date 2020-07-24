@@ -11,7 +11,7 @@ exports.createSauce = (req, res, next) => {
     delete sauceObject._id;
     const sauce = new Sauce({
         ...sauceObject,
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
     });
     sauce.save()
     .then(() => res.status(201).json({ message: 'Sauce créée !' }))
@@ -20,28 +20,38 @@ exports.createSauce = (req, res, next) => {
 
 //Logique métier pour addLikeDislike pour ajouter un j'aime ou un j'aime pas sur une sauce.
 exports.addLikeDislike = (req, res, next) => {
-    const likes = null;
     Sauce.findOne({ _id: req.params.id })
     .then(sauce => {
         const userId = req.body.userId;
         const userLikeStatus = req.body.like;
         if (userLikeStatus == 1 && !sauce.usersLiked.includes(userId)) {
             sauce.usersLiked.push(userId);
+            sauce.likes = sauce.usersLiked.length;
+            sauce.dislikes = sauce.usersDisliked.length;
         }
         if (userLikeStatus == -1 && !sauce.usersDisliked.includes(userId)) {
             sauce.usersDisliked.push(userId);
             console.log(sauce.usersDisliked);
+            sauce.likes = sauce.usersLiked.length;
+            sauce.dislikes = sauce.usersDisliked.length;
         };
         if (userLikeStatus == 0) {
-            sauce.usersLiked.filter(id => id !== userId);
-            sauce.usersDisliked.filter(id => id !== userId);
+            sauce.usersLiked.splice (sauce.usersLiked.indexOf(userId), 2);
+            sauce.usersDisliked.splice (sauce.usersDisliked.indexOf(userId), 2);
             console.log(sauce.usersDisliked);
+            sauce.likes = sauce.usersLiked.length;
+            sauce.dislikes = sauce.usersDisliked.length;
         };
         if (sauce.usersLiked.includes(userId) || sauce.usersDisliked.includes(userId)) {
             console.log("Vous avez déjà voté !")
         }
         console.log(sauce);
+        const updatedSauce = sauce;
+        updatedSauce.save();
+        return updatedSauce;
     })
+    .then(sauce => res.status(200).json(sauce))
+    .catch(error => res.status(400).json({ error }));
 
 }
 
@@ -75,3 +85,30 @@ exports.modifySauce = (req, res, next) => {
     .catch(error => res.status(400).json({ error }));
 }
 
+function likeDislike() {
+    const userId = req.body.userId;
+    const userLikeStatus = req.body.like;
+    if (userLikeStatus == 1 && !sauce.usersLiked.includes(userId)) {
+        sauce.usersLiked.push(userId);
+        sauce.likes = sauce.usersLiked.length;
+        sauce.dislikes = sauce.usersDisliked.length;
+    }
+    if (userLikeStatus == -1 && !sauce.usersDisliked.includes(userId)) {
+        sauce.usersDisliked.push(userId);
+        console.log(sauce.usersDisliked);
+        sauce.likes = sauce.usersLiked.length;
+        sauce.dislikes = sauce.usersDisliked.length;
+    };
+    if (userLikeStatus == 0) {
+        sauce.usersLiked.filter(id => id !== userId);
+        sauce.usersDisliked.filter(id => id !== userId);
+        console.log(sauce.usersDisliked);
+        sauce.likes = sauce.usersLiked.length;
+        sauce.dislikes = sauce.usersDisliked.length;
+    };
+    if (sauce.usersLiked.includes(userId) || sauce.usersDisliked.includes(userId)) {
+        console.log("Vous avez déjà voté !")
+    }
+    console.log(sauce);
+    return sauce;
+}
