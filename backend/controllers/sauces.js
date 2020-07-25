@@ -23,28 +23,38 @@ exports.addLikeDislike = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id })
     .then(sauce => {
         const userId = req.body.userId;
-        const userLikeStatus = req.body.like;
-        if (userLikeStatus == 1 && !sauce.usersLiked.includes(userId)) {
-            sauce.usersLiked.push(userId);
-            sauce.likes = sauce.usersLiked.length;
-            sauce.dislikes = sauce.usersDisliked.length;
+        const userWantsToLike = (req.body.like === 1);
+        const userWantsToDislike = (req.body.like === -1);
+        const userWantsToCancel = (req.body.like === 0);
+        const userCanLike = (!sauce.usersLiked.includes(userId));
+        const userCanDislike = (!sauce.usersDisliked.includes(userId));
+        const notTheFirstVote = (sauce.usersLiked.includes(userId) || sauce.usersDisliked.includes(userId));
+
+        let lastAction = 'none';
+        if (sauce.usersLiked.includes(userId)) {
+            lastAction = 'liked';
         }
-        if (userLikeStatus == -1 && !sauce.usersDisliked.includes(userId)) {
-            sauce.usersDisliked.push(userId);
-            console.log(sauce.usersDisliked);
-            sauce.likes = sauce.usersLiked.length;
-            sauce.dislikes = sauce.usersDisliked.length;
-        };
-        if (userLikeStatus == 0) {
-            sauce.usersLiked.splice (sauce.usersLiked.indexOf(userId), 2);
-            sauce.usersDisliked.splice (sauce.usersDisliked.indexOf(userId), 2);
-            console.log(sauce.usersDisliked);
-            sauce.likes = sauce.usersLiked.length;
-            sauce.dislikes = sauce.usersDisliked.length;
-        };
-        if (sauce.usersLiked.includes(userId) || sauce.usersDisliked.includes(userId)) {
-            console.log("Vous avez déjà voté !")
+
+        if (sauce.usersDisliked.includes(userId)) {
+            lastAction = 'disliked';
         }
+
+        if (userWantsToLike && userCanLike) {sauce.usersLiked.push(userId)};
+        if (userWantsToDislike && userCanDislike) {sauce.usersDisliked.push(userId)};
+
+        if (userWantsToCancel && notTheFirstVote) {
+            if  (sauce.usersLiked.includes(userId)) {
+                let index = sauce.usersLiked.indexOf(userId);
+                sauce.usersLiked.splice(index, 1);
+            } else {
+                let index = sauce.usersDisliked.indexOf(userId);
+                sauce.usersDisliked.splice(index, 1);
+            }
+            
+        }
+        sauce.likes = sauce.usersLiked.length;
+        sauce.dislikes = sauce.usersDisliked.length;
+
         console.log(sauce);
         const updatedSauce = sauce;
         updatedSauce.save();
@@ -52,8 +62,7 @@ exports.addLikeDislike = (req, res, next) => {
     })
     .then(sauce => res.status(200).json(sauce))
     .catch(error => res.status(400).json({ error }));
-
-}
+};
 
 //Logique métier pour deleteSauce, supprime une sauce
 exports.deleteSauce = (req, res, next) => {

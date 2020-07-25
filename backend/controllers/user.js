@@ -18,7 +18,7 @@ exports.signup = (req, res, next) => {
         console.log(user);
         //Enregistre l'objet user avec renvoi d'erreur si ça ne fonctionne pas, et statut 201 de création si ça fonctionne
         user.save()
-        .then(() => res.statuts(201).json({ message: 'Utilisateur créé !'}))
+        .then(() => res.status(201).json({ message: 'Utilisateur créé !'}))
         .catch(error => res.status(400).json({ error }));
     })
     //Renvoi d'erreur 500 si le hash ne fonctionne pas
