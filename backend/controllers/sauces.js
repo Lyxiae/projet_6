@@ -3,7 +3,6 @@ const Sauce = require('../models/Sauce');
 //Importation du système de gestion de fichiers file system de Node
 const fs = require('fs');
 
-
 //Logique métier pour createSauce, créer une sauce
 exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
@@ -54,8 +53,6 @@ exports.addLikeDislike = (req, res, next) => {
         }
         sauce.likes = sauce.usersLiked.length;
         sauce.dislikes = sauce.usersDisliked.length;
-
-        console.log(sauce);
         const updatedSauce = sauce;
         updatedSauce.save();
         return updatedSauce;
@@ -92,32 +89,4 @@ exports.modifySauce = (req, res, next) => {
     Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id})
     .then(() => res.status(200).json({ message: 'Sauce modifiée !' }))
     .catch(error => res.status(400).json({ error }));
-}
-
-function likeDislike() {
-    const userId = req.body.userId;
-    const userLikeStatus = req.body.like;
-    if (userLikeStatus == 1 && !sauce.usersLiked.includes(userId)) {
-        sauce.usersLiked.push(userId);
-        sauce.likes = sauce.usersLiked.length;
-        sauce.dislikes = sauce.usersDisliked.length;
-    }
-    if (userLikeStatus == -1 && !sauce.usersDisliked.includes(userId)) {
-        sauce.usersDisliked.push(userId);
-        console.log(sauce.usersDisliked);
-        sauce.likes = sauce.usersLiked.length;
-        sauce.dislikes = sauce.usersDisliked.length;
-    };
-    if (userLikeStatus == 0) {
-        sauce.usersLiked.filter(id => id !== userId);
-        sauce.usersDisliked.filter(id => id !== userId);
-        console.log(sauce.usersDisliked);
-        sauce.likes = sauce.usersLiked.length;
-        sauce.dislikes = sauce.usersDisliked.length;
-    };
-    if (sauce.usersLiked.includes(userId) || sauce.usersDisliked.includes(userId)) {
-        console.log("Vous avez déjà voté !")
-    }
-    console.log(sauce);
-    return sauce;
 }

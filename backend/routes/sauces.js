@@ -4,6 +4,7 @@ const router = express.Router();
 //Importation du middleware d'authentification
 const auth = require('../middleware/auth');
 
+//Importation du middleware de configuration de multer
 const multer = require('../middleware/multer-config');
 
 //Importation des controllers / logiques métier
