@@ -10,13 +10,13 @@ const userRoutes = require('./routes/user');
 const app = express();
 
 //Connection à la base de donnée MongoDB via mongoose
-mongoose.connect('mongodb+srv://lyxiae:D4ng3rg4ng@cluster0.ridn0.mongodb.net/pecocko?retryWrites=true&w=majority',
+mongoose.connect('mongodb+srv://website_access:mejw8uY0uYuCKnrB@cluster0.ridn0.mongodb.net/pecocko?retryWrites=true&w=majority',
 {useNewUrlParser: true,
 useUnifiedTopology: true })
 .then(() => console.log('Connexion à MongoDB réussie !'))
 .catch(() => console.log('Connexion à MongoDB échouée !'))
 
-
+app.use(helmet());
 
 //Configuration des headers pour éviter les erreurs CORS
 app.use((req, res, next) => {
@@ -25,8 +25,6 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
     next();
 });
-
-app.use(helmet());
 
 //parser des données récupérées
 app.use(bodyParser.json());
