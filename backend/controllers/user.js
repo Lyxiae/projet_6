@@ -6,7 +6,6 @@ const User = require('../models/User');
 
 //Inscription
 exports.signup = (req, res, next) => {
-    console.log(req.body);
     //Hash le mot de passe à partir du password donné dans la requête, effectue l'opération 10 fois
     bcrypt.hash(req.body.password, 10)
     .then(hash => {
@@ -15,11 +14,10 @@ exports.signup = (req, res, next) => {
             email: req.body.email,
             password: hash,
         });
-        console.log(user);
         //Enregistre l'objet user avec renvoi d'erreur si ça ne fonctionne pas, et statut 201 de création si ça fonctionne
         user.save()
-        .then(() => res.status(201).json({ message: 'Utilisateur créé !'}))
-        .catch(error => res.status(400).json({ error }));
+            .then(() => res.status(201).json({ message: 'Utilisateur créé !'}))
+            .catch(error => res.status(500).json({ message: 'Cette adresse mail est déjà utilisée'}));
     })
     //Renvoi d'erreur 500 si le hash ne fonctionne pas
     .catch(error => res.status(500).json({ error }));

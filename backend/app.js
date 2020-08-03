@@ -2,7 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
-const helmet = require('helmet');
+const helmet = require('helmet'); //Plug-in de protection globale des headers
+const xss = require('xss-clean'); //Protège des attaques de type XSS
+
+const dotenv = require('dotenv').config();
 
 const sauceRoutes = require('./routes/sauces');
 const userRoutes = require('./routes/user');
@@ -10,12 +13,13 @@ const userRoutes = require('./routes/user');
 const app = express();
 
 //Connection à la base de donnée MongoDB via mongoose
-mongoose.connect('mongodb+srv://website_access:mejw8uY0uYuCKnrB@cluster0.ridn0.mongodb.net/pecocko?retryWrites=true&w=majority',
+mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ridn0.mongodb.net/pecocko?retryWrites=true&w=majority`,
 {useNewUrlParser: true,
 useUnifiedTopology: true })
 .then(() => console.log('Connexion à MongoDB réussie !'))
 .catch(() => console.log('Connexion à MongoDB échouée !'))
 
+app.use(xss());
 app.use(helmet());
 
 //Configuration des headers pour éviter les erreurs CORS
