@@ -63,8 +63,15 @@ exports.addLikeDislike = (req, res, next) => {
 
 //Logique métier pour deleteSauce, supprime une sauce
 exports.deleteSauce = (req, res, next) => {
-    Sauce.deleteOne({ _id: req.params.id })
-    .then(() => res.status(200).json({ message: 'Sauce Supprimée !' }))
+    Sauce.findOne({_id: req.params.id})
+    .then(sauce => {
+        const filename = sauce.imageUrl.split('/images/')[1];
+        fs.unlink(`images/${filename}`, () => {
+            Sauce.deleteOne({ _id: req.params.id })
+            .then(() => res.status(200).json({ message: 'Sauce Supprimée !' }))
+            .catch(error => res.status(400).json({ error }));
+        })
+    })
     .catch(error => res.status(500).json({ error }));
 }
 
