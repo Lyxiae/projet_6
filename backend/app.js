@@ -5,6 +5,7 @@ const path = require('path');
 const helmet = require('helmet'); //Plug-in de protection globale des headers
 const xss = require('xss-clean'); //Protège des attaques de type XSS
 
+
 const dotenv = require('dotenv').config();
 
 const sauceRoutes = require('./routes/sauces');

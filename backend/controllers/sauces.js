@@ -11,6 +11,9 @@ exports.createSauce = (req, res, next) => {
     const sauce = new Sauce({
         ...sauceObject,
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+        likes: 0,
+        dislikes:0,
+        
     });
     sauce.save()
     .then(() => res.status(201).json({ message: 'Sauce créée !' }))
@@ -28,15 +31,6 @@ exports.addLikeDislike = (req, res, next) => {
         const userCanLike = (!sauce.usersLiked.includes(userId));
         const userCanDislike = (!sauce.usersDisliked.includes(userId));
         const notTheFirstVote = (sauce.usersLiked.includes(userId) || sauce.usersDisliked.includes(userId));
-
-        let lastAction = 'none';
-        if (sauce.usersLiked.includes(userId)) {
-            lastAction = 'liked';
-        }
-
-        if (sauce.usersDisliked.includes(userId)) {
-            lastAction = 'disliked';
-        }
 
         if (userWantsToLike && userCanLike) {sauce.usersLiked.push(userId)};
         if (userWantsToDislike && userCanDislike) {sauce.usersDisliked.push(userId)};
@@ -91,8 +85,13 @@ exports.getOneSauce = (req, res, next) => {
 
 //Logique métier pour modifySauce, modifie les informations d'une sauce
 exports.modifySauce = (req, res, next) => {
-    const sauceObject = req.body;
-    console.log(req.body);
+    //Vérifie qu'il y a une file dans la requête de modification du fichier.
+    const sauceObject = req.file ?
+    {
+        //S'il y en a une, il reprend le corps de la requête et modifie l'image pour le chemin donné dans la requête
+        ...JSON.parse(req.body.sauce),
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    } : { ...req.body };
     Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id})
     .then(() => res.status(200).json({ message: 'Sauce modifiée !' }))
     .catch(error => res.status(400).json({ error }));
