@@ -1,2 +1,4 @@
-DB_PASS= password
-DB_USER= username
+DB_PASS=password
+DB_USER=utilisateur
+DB_HOST=adresse_host
+DB_COLL=collection
