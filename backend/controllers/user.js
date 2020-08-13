@@ -17,7 +17,7 @@ exports.signup = (req, res, next) => {
         //Enregistre l'objet user avec renvoi d'erreur si ça ne fonctionne pas, et statut 201 de création si ça fonctionne
         user.save()
             .then(() => res.status(201).json({ message: 'Utilisateur créé !'}))
-            .catch(error => res.status(500).json({ message: 'Cette adresse mail est déjà utilisée'}));
+            .catch(error => res.status(409).json({ message: 'Cette adresse mail est déjà utilisée'}));
     })
     //Renvoi d'erreur 500 si le hash ne fonctionne pas
     .catch(error => res.status(500).json({ error }));
@@ -41,7 +41,7 @@ exports.login = (req, res, next) => {
                 userId: user._id,
                 token: jwt.sign(
                     { userId: user._id },
-                    'a7T2wKWWh4HLkapyfi1XyehFJpIMeVFuUWcgV0xV0s2nrO4t4zBVgajBubwJGKj',
+                    `${process.env.JWT_KEY}`,
                     { expiresIn: '24h' }
                 )
             });
